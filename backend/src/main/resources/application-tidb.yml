@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://${DB_HOST:gateway01.ap-southeast-1.prod.aws.tidbcloud.com}:${DB_PORT:4000}/${DB_NAME:test}?useSSL=true&requireSSL=true&verifyServerCertificate=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${DB_HOST:gateway01.ap-southeast-1.prod.aws.tidbcloud.com}:${DB_PORT:4000}/${DB_NAME:smartprocure_db}?createDatabaseIfNotExist=true&useSSL=true&requireSSL=true&verifyServerCertificate=false&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:AiDBzztxxTjpuru.root}
     password: ${DB_PASSWORD:JIof7lZNs080GvVm}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -11,7 +11,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.TiDBDialect
+        dialect: org.hibernate.dialect.MySQLDialect
 
 app:
   jwt:
