@@ -17,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -55,8 +56,13 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
-                config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                String allowedOrigins = System.getenv("ALLOWED_ORIGINS");
+                if (allowedOrigins != null && !allowedOrigins.isBlank()) {
+                    config.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+                } else {
+                    config.setAllowedOriginPatterns(List.of("http://localhost:*", "https://*.onrender.com", "*"));
+                }
+                config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(List.of("*"));
                 config.setAllowCredentials(true);
                 return config;
@@ -66,15 +72,17 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/api/auth/**",
+                    "/api/v1/auth/**",
                     "/api/departments",
+                    "/api/v1/departments",
                     "/api/health",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/h2-console/**"
+                    "/swagger-ui.html"
                 ).permitAll()
                 .anyRequest().authenticated()
             );
+
 
         http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
 

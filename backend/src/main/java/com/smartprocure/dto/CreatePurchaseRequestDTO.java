@@ -1,5 +1,6 @@
 package com.smartprocure.dto;
 
+import com.smartprocure.model.enums.UrgencyLevel;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,14 +23,29 @@ public class CreatePurchaseRequestDTO {
     @DecimalMin(value = "0.01", message = "Estimated cost must be greater than zero")
     private BigDecimal estimatedCost;
 
+    private UrgencyLevel urgency = UrgencyLevel.MEDIUM;
+
+    private Boolean isDraft = false;
+
     public CreatePurchaseRequestDTO() {}
 
     public CreatePurchaseRequestDTO(String title, String description, String category, BigDecimal estimatedCost) {
+        this(title, description, category, estimatedCost, UrgencyLevel.MEDIUM, false);
+    }
+
+    public CreatePurchaseRequestDTO(String title, String description, String category, BigDecimal estimatedCost, UrgencyLevel urgency) {
+        this(title, description, category, estimatedCost, urgency, false);
+    }
+
+    public CreatePurchaseRequestDTO(String title, String description, String category, BigDecimal estimatedCost, UrgencyLevel urgency, Boolean isDraft) {
         this.title = title;
         this.description = description;
         this.category = category;
         this.estimatedCost = estimatedCost;
+        this.urgency = urgency != null ? urgency : UrgencyLevel.MEDIUM;
+        this.isDraft = isDraft != null ? isDraft : false;
     }
+
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -42,4 +58,11 @@ public class CreatePurchaseRequestDTO {
 
     public BigDecimal getEstimatedCost() { return estimatedCost; }
     public void setEstimatedCost(BigDecimal estimatedCost) { this.estimatedCost = estimatedCost; }
+
+    public UrgencyLevel getUrgency() { return urgency; }
+    public void setUrgency(UrgencyLevel urgency) { this.urgency = urgency; }
+
+    public Boolean getIsDraft() { return isDraft; }
+    public void setIsDraft(Boolean isDraft) { this.isDraft = isDraft; }
 }
+

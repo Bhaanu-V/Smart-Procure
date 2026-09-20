@@ -42,8 +42,24 @@ public class ApprovalServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private SlaTrackerService slaTrackerService;
+
+    @Mock
+    private BudgetGovernanceService budgetGovernanceService;
+
+    @Mock
+    private AuditEventService auditEventService;
+
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private com.smartprocure.repository.SlaRecordRepository slaRecordRepository;
+
     @InjectMocks
     private ApprovalServiceImpl approvalService;
+
 
     private Department department;
     private User employee;
@@ -71,7 +87,7 @@ public class ApprovalServiceTest {
     public void testApproveRequestSuccess() {
         ApprovalDecisionDTO decision = new ApprovalDecisionDTO(ApprovalAction.APPROVE, "Budget verified. Approved.");
 
-        when(userRepository.findByEmail("manager@smartprocure.com")).thenReturn(Optional.of(manager));
+        when(userRepository.findByEmailIgnoreCase("manager@smartprocure.com")).thenReturn(Optional.of(manager));
         when(purchaseRequestRepository.findById(100L)).thenReturn(Optional.of(purchaseRequest));
 
         Approval savedApproval = Approval.builder()
@@ -95,7 +111,7 @@ public class ApprovalServiceTest {
     public void testRejectWithoutCommentThrowsException() {
         ApprovalDecisionDTO decision = new ApprovalDecisionDTO(ApprovalAction.REJECT, "   ");
 
-        when(userRepository.findByEmail("manager@smartprocure.com")).thenReturn(Optional.of(manager));
+        when(userRepository.findByEmailIgnoreCase("manager@smartprocure.com")).thenReturn(Optional.of(manager));
         when(purchaseRequestRepository.findById(100L)).thenReturn(Optional.of(purchaseRequest));
 
         assertThatThrownBy(() -> approvalService.processApprovalDecision(100L, decision, "manager@smartprocure.com"))
@@ -108,7 +124,7 @@ public class ApprovalServiceTest {
         ApprovalDecisionDTO decision = new ApprovalDecisionDTO(ApprovalAction.APPROVE, "Self approval");
 
         User managerWhoIsEmployee = User.builder().id(10L).fullName("Dev User").email("dev@smartprocure.com").role(Role.MANAGER).department(department).build();
-        when(userRepository.findByEmail("dev@smartprocure.com")).thenReturn(Optional.of(managerWhoIsEmployee));
+        when(userRepository.findByEmailIgnoreCase("dev@smartprocure.com")).thenReturn(Optional.of(managerWhoIsEmployee));
         when(purchaseRequestRepository.findById(100L)).thenReturn(Optional.of(purchaseRequest));
 
         assertThatThrownBy(() -> approvalService.processApprovalDecision(100L, decision, "dev@smartprocure.com"))

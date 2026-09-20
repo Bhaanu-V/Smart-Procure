@@ -1,6 +1,8 @@
 package com.smartprocure.model.entity;
 
+import com.smartprocure.model.enums.PriorityLevel;
 import com.smartprocure.model.enums.RequestStatus;
+import com.smartprocure.model.enums.UrgencyLevel;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -30,6 +32,17 @@ public class PurchaseRequest {
     private BigDecimal estimatedCost;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private UrgencyLevel urgency = UrgencyLevel.MEDIUM;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "priority_level", nullable = false, length = 20)
+    private PriorityLevel priorityLevel = PriorityLevel.NORMAL;
+
+    @Column(name = "priority_score", nullable = false)
+    private Integer priorityScore = 0;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private RequestStatus status;
 
@@ -49,13 +62,16 @@ public class PurchaseRequest {
 
     public PurchaseRequest() {}
 
-    public PurchaseRequest(Long id, String requestNumber, String title, String description, String category, BigDecimal estimatedCost, RequestStatus status, User employee, Department department, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public PurchaseRequest(Long id, String requestNumber, String title, String description, String category, BigDecimal estimatedCost, UrgencyLevel urgency, PriorityLevel priorityLevel, Integer priorityScore, RequestStatus status, User employee, Department department, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.requestNumber = requestNumber;
         this.title = title;
         this.description = description;
         this.category = category;
         this.estimatedCost = estimatedCost;
+        this.urgency = urgency != null ? urgency : UrgencyLevel.MEDIUM;
+        this.priorityLevel = priorityLevel != null ? priorityLevel : PriorityLevel.NORMAL;
+        this.priorityScore = priorityScore != null ? priorityScore : 0;
         this.status = status;
         this.employee = employee;
         this.department = department;
@@ -69,6 +85,15 @@ public class PurchaseRequest {
         this.updatedAt = LocalDateTime.now();
         if (this.status == null) {
             this.status = RequestStatus.SUBMITTED;
+        }
+        if (this.urgency == null) {
+            this.urgency = UrgencyLevel.MEDIUM;
+        }
+        if (this.priorityLevel == null) {
+            this.priorityLevel = PriorityLevel.NORMAL;
+        }
+        if (this.priorityScore == null) {
+            this.priorityScore = 0;
         }
     }
 
@@ -94,6 +119,15 @@ public class PurchaseRequest {
 
     public BigDecimal getEstimatedCost() { return estimatedCost; }
     public void setEstimatedCost(BigDecimal estimatedCost) { this.estimatedCost = estimatedCost; }
+
+    public UrgencyLevel getUrgency() { return urgency; }
+    public void setUrgency(UrgencyLevel urgency) { this.urgency = urgency; }
+
+    public PriorityLevel getPriorityLevel() { return priorityLevel; }
+    public void setPriorityLevel(PriorityLevel priorityLevel) { this.priorityLevel = priorityLevel; }
+
+    public Integer getPriorityScore() { return priorityScore; }
+    public void setPriorityScore(Integer priorityScore) { this.priorityScore = priorityScore; }
 
     public RequestStatus getStatus() { return status; }
     public void setStatus(RequestStatus status) { this.status = status; }
@@ -121,6 +155,9 @@ public class PurchaseRequest {
         private String description;
         private String category;
         private BigDecimal estimatedCost;
+        private UrgencyLevel urgency = UrgencyLevel.MEDIUM;
+        private PriorityLevel priorityLevel = PriorityLevel.NORMAL;
+        private Integer priorityScore = 0;
         private RequestStatus status;
         private User employee;
         private Department department;
@@ -133,6 +170,9 @@ public class PurchaseRequest {
         public PurchaseRequestBuilder description(String description) { this.description = description; return this; }
         public PurchaseRequestBuilder category(String category) { this.category = category; return this; }
         public PurchaseRequestBuilder estimatedCost(BigDecimal estimatedCost) { this.estimatedCost = estimatedCost; return this; }
+        public PurchaseRequestBuilder urgency(UrgencyLevel urgency) { this.urgency = urgency; return this; }
+        public PurchaseRequestBuilder priorityLevel(PriorityLevel priorityLevel) { this.priorityLevel = priorityLevel; return this; }
+        public PurchaseRequestBuilder priorityScore(Integer priorityScore) { this.priorityScore = priorityScore; return this; }
         public PurchaseRequestBuilder status(RequestStatus status) { this.status = status; return this; }
         public PurchaseRequestBuilder employee(User employee) { this.employee = employee; return this; }
         public PurchaseRequestBuilder department(Department department) { this.department = department; return this; }
@@ -140,7 +180,8 @@ public class PurchaseRequest {
         public PurchaseRequestBuilder updatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; return this; }
 
         public PurchaseRequest build() {
-            return new PurchaseRequest(id, requestNumber, title, description, category, estimatedCost, status, employee, department, createdAt, updatedAt);
+            return new PurchaseRequest(id, requestNumber, title, description, category, estimatedCost, urgency, priorityLevel, priorityScore, status, employee, department, createdAt, updatedAt);
         }
     }
 }
+

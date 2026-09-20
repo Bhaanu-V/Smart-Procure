@@ -1,0 +1,59 @@
+services:
+  # -------------------------------------------------------------
+  # Backend Web Service (Spring Boot 3 + Java 17)
+  # -------------------------------------------------------------
+  - type: web
+    name: smartprocure-backend
+    runtime: java
+    rootDir: backend
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/smartprocure-backend-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: postgres
+      - key: DB_HOST
+        fromDatabase:
+          name: smartprocure-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: smartprocure-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: smartprocure-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: smartprocure-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: smartprocure-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JAVA_VERSION
+        value: "17"
+
+  # -------------------------------------------------------------
+  # Frontend Static Site (React + Vite SPA)
+  # -------------------------------------------------------------
+  - type: web
+    name: smartprocure-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+# -------------------------------------------------------------
+# Managed PostgreSQL Database
+# -------------------------------------------------------------
+databases:
+  - name: smartprocure-db
+    databaseName: smartprocure_db
+    user: smartprocure_user

@@ -34,8 +34,30 @@ public class PurchaseRequestServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private com.smartprocure.repository.DepartmentRepository departmentRepository;
+
+    @Mock
+    private PriorityCalculatorService priorityCalculatorService;
+
+    @Mock
+    private SlaTrackerService slaTrackerService;
+
+    @Mock
+    private BudgetGovernanceService budgetGovernanceService;
+
+    @Mock
+    private AuditEventService auditEventService;
+
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private com.smartprocure.repository.SlaRecordRepository slaRecordRepository;
+
     @InjectMocks
     private PurchaseRequestServiceImpl purchaseRequestService;
+
 
     private User employee;
     private Department department;
@@ -57,7 +79,10 @@ public class PurchaseRequestServiceTest {
     public void testCreatePurchaseRequestSuccess() {
         CreatePurchaseRequestDTO dto = new CreatePurchaseRequestDTO("Development Laptops", "2x M3 MacBooks", "Hardware", new BigDecimal("4500.00"));
 
-        when(userRepository.findByEmail("john@smartprocure.com")).thenReturn(Optional.of(employee));
+        when(userRepository.findByEmailIgnoreCase("john@smartprocure.com")).thenReturn(Optional.of(employee));
+        when(priorityCalculatorService.calculatePriority(any(), any(), any()))
+                .thenReturn(new PriorityCalculatorService.PriorityResult(50, com.smartprocure.model.enums.PriorityLevel.HIGH));
+
 
         PurchaseRequest savedPR = PurchaseRequest.builder()
                 .id(100L)
@@ -83,7 +108,7 @@ public class PurchaseRequestServiceTest {
 
     @Test
     public void testGetEmployeeRequestsSuccess() {
-        when(userRepository.findByEmail("john@smartprocure.com")).thenReturn(Optional.of(employee));
+        when(userRepository.findByEmailIgnoreCase("john@smartprocure.com")).thenReturn(Optional.of(employee));
 
         PurchaseRequest pr1 = PurchaseRequest.builder()
                 .id(101L)

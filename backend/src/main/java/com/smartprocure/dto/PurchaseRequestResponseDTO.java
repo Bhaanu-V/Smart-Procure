@@ -1,6 +1,9 @@
 package com.smartprocure.dto;
 
+import com.smartprocure.model.enums.PriorityLevel;
 import com.smartprocure.model.enums.RequestStatus;
+import com.smartprocure.model.enums.SlaStatus;
+import com.smartprocure.model.enums.UrgencyLevel;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,6 +15,9 @@ public class PurchaseRequestResponseDTO {
     private String description;
     private String category;
     private BigDecimal estimatedCost;
+    private UrgencyLevel urgency;
+    private PriorityLevel priorityLevel;
+    private Integer priorityScore;
     private RequestStatus status;
     private Long employeeId;
     private String employeeName;
@@ -19,18 +25,25 @@ public class PurchaseRequestResponseDTO {
     private String departmentName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private SlaStatus slaStatus;
+    private LocalDateTime expectedApprovalTime;
 
     public PurchaseRequestResponseDTO() {}
 
     public PurchaseRequestResponseDTO(Long id, String requestNumber, String title, String description, String category,
-                                     BigDecimal estimatedCost, RequestStatus status, Long employeeId, String employeeName,
-                                     Long departmentId, String departmentName, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                                      BigDecimal estimatedCost, UrgencyLevel urgency, PriorityLevel priorityLevel,
+                                      Integer priorityScore, RequestStatus status, Long employeeId, String employeeName,
+                                      Long departmentId, String departmentName, LocalDateTime createdAt, LocalDateTime updatedAt,
+                                      SlaStatus slaStatus, LocalDateTime expectedApprovalTime) {
         this.id = id;
         this.requestNumber = requestNumber;
         this.title = title;
         this.description = description;
         this.category = category;
         this.estimatedCost = estimatedCost;
+        this.urgency = urgency;
+        this.priorityLevel = priorityLevel;
+        this.priorityScore = priorityScore;
         this.status = status;
         this.employeeId = employeeId;
         this.employeeName = employeeName;
@@ -38,6 +51,8 @@ public class PurchaseRequestResponseDTO {
         this.departmentName = departmentName;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.slaStatus = slaStatus;
+        this.expectedApprovalTime = expectedApprovalTime;
     }
 
     public Long getId() { return id; }
@@ -57,6 +72,15 @@ public class PurchaseRequestResponseDTO {
 
     public BigDecimal getEstimatedCost() { return estimatedCost; }
     public void setEstimatedCost(BigDecimal estimatedCost) { this.estimatedCost = estimatedCost; }
+
+    public UrgencyLevel getUrgency() { return urgency; }
+    public void setUrgency(UrgencyLevel urgency) { this.urgency = urgency; }
+
+    public PriorityLevel getPriorityLevel() { return priorityLevel; }
+    public void setPriorityLevel(PriorityLevel priorityLevel) { this.priorityLevel = priorityLevel; }
+
+    public Integer getPriorityScore() { return priorityScore; }
+    public void setPriorityScore(Integer priorityScore) { this.priorityScore = priorityScore; }
 
     public RequestStatus getStatus() { return status; }
     public void setStatus(RequestStatus status) { this.status = status; }
@@ -78,4 +102,11 @@ public class PurchaseRequestResponseDTO {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public SlaStatus getSlaStatus() { return slaStatus; }
+    public void setSlaStatus(SlaStatus slaStatus) { this.slaStatus = slaStatus; }
+
+    public LocalDateTime getExpectedApprovalTime() { return expectedApprovalTime; }
+    public void setExpectedApprovalTime(LocalDateTime expectedApprovalTime) { this.expectedApprovalTime = expectedApprovalTime; }
 }
+

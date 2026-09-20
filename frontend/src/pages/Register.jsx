@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import Navbar from '../components/Navbar';
-import { UserPlus, Building, Mail, Lock, UserCheck, ArrowRight } from 'lucide-react';
+import { UserPlus, Building, Mail, Lock, UserCheck, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 const DEFAULT_DEPARTMENTS = [
   { id: 1, name: 'Engineering', code: 'ENG' },
@@ -17,6 +17,7 @@ export default function Register() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState('EMPLOYEE');
   const [departments, setDepartments] = useState(DEFAULT_DEPARTMENTS);
   const [departmentId, setDepartmentId] = useState(1);
@@ -91,11 +92,11 @@ export default function Register() {
             </label>
             <input
               type="text"
+              className="form-input"
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="e.g. Alice Smith"
-              style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)', color: 'white', fontSize: '0.95rem' }}
             />
           </div>
 
@@ -105,11 +106,11 @@ export default function Register() {
             </label>
             <input
               type="email"
+              className="form-input"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="alice@smartprocure.com"
-              style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)', color: 'white', fontSize: '0.95rem' }}
             />
           </div>
 
@@ -117,27 +118,52 @@ export default function Register() {
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.875rem', marginBottom: '0.4rem', color: 'var(--text-secondary)', fontWeight: '600' }}>
               <Lock size={16} style={{ color: 'var(--accent-blue)' }} /> Password *
             </label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)', color: 'white', fontSize: '0.95rem' }}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                className="form-input"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                style={{ paddingRight: '2.5rem' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '0.75rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: 0
+                }}
+                title={showPassword ? 'Hide Password' : 'Show Password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.4rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Role *</label>
               <select
+                className="form-select"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)', color: 'white', fontSize: '0.9rem', cursor: 'pointer' }}
+                style={{ width: '100%', cursor: 'pointer' }}
               >
-                <option value="EMPLOYEE">EMPLOYEE</option>
-                <option value="MANAGER">MANAGER</option>
+                <option value="EMPLOYEE" style={{ backgroundColor: '#0f172a', color: '#f8fafc' }}>EMPLOYEE</option>
+                <option value="MANAGER" style={{ backgroundColor: '#0f172a', color: '#f8fafc' }}>MANAGER</option>
+                <option value="ADMIN" style={{ backgroundColor: '#0f172a', color: '#f8fafc' }}>ADMIN</option>
               </select>
             </div>
 
@@ -146,12 +172,13 @@ export default function Register() {
                 <Building size={16} style={{ color: 'var(--accent-blue)' }} /> Department *
               </label>
               <select
+                className="form-select"
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
-                style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)', color: 'white', fontSize: '0.9rem', cursor: 'pointer' }}
+                style={{ width: '100%', cursor: 'pointer' }}
               >
                 {departments.map((dept) => (
-                  <option key={dept.id} value={dept.id}>
+                  <option key={dept.id} value={dept.id} style={{ backgroundColor: '#0f172a', color: '#f8fafc' }}>
                     {dept.name} ({dept.code})
                   </option>
                 ))}

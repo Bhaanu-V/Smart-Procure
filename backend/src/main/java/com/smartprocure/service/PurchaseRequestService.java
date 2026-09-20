@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface PurchaseRequestService {
     PurchaseRequestResponseDTO createPurchaseRequest(CreatePurchaseRequestDTO dto, String employeeEmail);
+    PurchaseRequestResponseDTO updateDraft(Long id, CreatePurchaseRequestDTO dto, String employeeEmail);
+    PurchaseRequestResponseDTO submitDraft(Long id, String employeeEmail);
     List<PurchaseRequestResponseDTO> getEmployeeRequests(String employeeEmail);
     PurchaseRequestResponseDTO getRequestById(Long id, String userEmail);
 }

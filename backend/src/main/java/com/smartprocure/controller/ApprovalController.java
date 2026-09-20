@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/approvals")
+@RequestMapping("/api/v1/approvals")
 public class ApprovalController {
 
     private final ApprovalService approvalService;
@@ -24,15 +24,15 @@ public class ApprovalController {
     }
 
     @GetMapping("/pending")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<List<PurchaseRequestResponseDTO>> getPendingRequests(
             @AuthenticationPrincipal UserDetails userDetails) {
         List<PurchaseRequestResponseDTO> pending = approvalService.getPendingDepartmentRequests(userDetails.getUsername());
         return ResponseEntity.ok(pending);
     }
 
-    @PostMapping("/{requestId}/review")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PostMapping({"/requests/{requestId}/decision", "/{requestId}/review"})
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<ApprovalResponseDTO> reviewRequest(
             @PathVariable Long requestId,
             @Valid @RequestBody ApprovalDecisionDTO decisionDTO,
@@ -41,7 +41,7 @@ public class ApprovalController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/history/{requestId}")
+    @GetMapping({"/requests/{requestId}/history", "/history/{requestId}"})
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'MANAGER', 'ADMIN')")
     public ResponseEntity<List<ApprovalResponseDTO>> getApprovalHistory(
             @PathVariable Long requestId,

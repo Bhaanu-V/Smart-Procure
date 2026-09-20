@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/purchase-requests")
+@RequestMapping("/api/v1/requests")
 public class PurchaseRequestController {
 
     private final PurchaseRequestService purchaseRequestService;
@@ -24,7 +24,7 @@ public class PurchaseRequestController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'MANAGER', 'ADMIN')")
     public ResponseEntity<PurchaseRequestResponseDTO> createRequest(
             @Valid @RequestBody CreatePurchaseRequestDTO dto,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -32,12 +32,31 @@ public class PurchaseRequestController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/my")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @GetMapping({"/my", "/my-requests"})
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'MANAGER', 'ADMIN')")
     public ResponseEntity<List<PurchaseRequestResponseDTO>> getMyRequests(
             @AuthenticationPrincipal UserDetails userDetails) {
         List<PurchaseRequestResponseDTO> requests = purchaseRequestService.getEmployeeRequests(userDetails.getUsername());
         return ResponseEntity.ok(requests);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'MANAGER', 'ADMIN')")
+    public ResponseEntity<PurchaseRequestResponseDTO> updateDraft(
+            @PathVariable Long id,
+            @Valid @RequestBody CreatePurchaseRequestDTO dto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        PurchaseRequestResponseDTO response = purchaseRequestService.updateDraft(id, dto, userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/submit")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'MANAGER', 'ADMIN')")
+    public ResponseEntity<PurchaseRequestResponseDTO> submitDraft(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        PurchaseRequestResponseDTO response = purchaseRequestService.submitDraft(id, userDetails.getUsername());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

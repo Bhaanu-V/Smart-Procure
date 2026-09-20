@@ -9,4 +9,9 @@ public interface AuthService {
     AuthResponse registerUser(RegisterRequest registerRequest);
     AuthResponse authenticateUser(LoginRequest loginRequest);
     UserDTO getCurrentUserProfile(String email);
+    boolean verifyEmail(String token);
+    boolean resendVerificationToken(String email);
+    String forgotPassword(String email);
+    boolean resetPassword(String token, String newPassword);
 }
+

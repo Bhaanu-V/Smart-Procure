@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('smartprocure_user', JSON.stringify(data));
       return { success: true, data };
     } catch (error) {
-      const message = error.response?.data?.message || 'Login failed. Please check credentials.';
+      const message = error.userMessage || error.response?.data?.message || 'Login failed. Please check credentials.';
       return { success: false, error: message };
     } finally {
       setLoading(false);
@@ -34,13 +34,28 @@ export function AuthProvider({ children }) {
     try {
       const response = await api.post('/auth/register', formData);
       const data = response.data;
-      setToken(data.token);
-      setUser(data);
-      localStorage.setItem('smartprocure_token', data.token);
-      localStorage.setItem('smartprocure_user', JSON.stringify(data));
+      if (data.token) {
+        setToken(data.token);
+        setUser(data);
+        localStorage.setItem('smartprocure_token', data.token);
+        localStorage.setItem('smartprocure_user', JSON.stringify(data));
+      }
       return { success: true, data };
     } catch (error) {
-      const message = error.response?.data?.message || 'Registration failed.';
+      const message = error.userMessage || error.response?.data?.message || 'Registration failed.';
+      return { success: false, error: message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyEmail = async (tokenString) => {
+    setLoading(true);
+    try {
+      const response = await api.post('/auth/verify-email', { token: tokenString });
+      return { success: true, data: response.data };
+    } catch (error) {
+      const message = error.userMessage || 'Email verification failed.';
       return { success: false, error: message };
     } finally {
       setLoading(false);
@@ -55,7 +70,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, verifyEmail, logout }}>
       {children}
     </AuthContext.Provider>
   );
