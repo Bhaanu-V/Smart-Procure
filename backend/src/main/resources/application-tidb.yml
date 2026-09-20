@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://${DB_HOST:gateway01.ap-southeast-1.prod.aws.tidbcloud.com}:${DB_PORT:4000}/${DB_NAME:test}?createDatabaseIfNotExist=true&useSSL=true&requireSSL=true&verifyServerCertificate=false&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:AiDBzztxxTjpuru.root}
-    password: ${DB_PASSWORD:Qrunch36tZCdOB81}
+    password: ${DB_PASSWORD:t9Dz8BqUY4TS0jSg}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
