@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
@@ -39,7 +38,7 @@ function RoleGuard({ allowedRoles, children }) {
   if (!user) return <Navigate to="/login" replace />;
 
   const userRole = user.role?.replace('ROLE_', '');
-  const hasPermission = allowedRoles.some(role => role.replace('ROLE_', '') === userRole);
+  const hasPermission = allowedRoles.some((role) => role.replace('ROLE_', '') === userRole);
 
   if (!hasPermission) {
     return <UnauthorizedPage />;
@@ -52,10 +51,11 @@ function RoleBasedDashboard() {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
 
-  if (user.role === 'ROLE_ADMIN' || user.role === 'ADMIN') {
+  const cleanRole = user.role?.replace('ROLE_', '');
+  if (cleanRole === 'ADMIN') {
     return <AdminDashboard />;
   }
-  if (user.role === 'ROLE_MANAGER' || user.role === 'MANAGER') {
+  if (cleanRole === 'MANAGER') {
     return <ManagerDashboard />;
   }
   return <EmployeeDashboard />;
@@ -89,7 +89,7 @@ export default function App() {
               path="/manager/pending"
               element={
                 <ProtectedWorkspace>
-                  <RoleGuard allowedRoles={['MANAGER']}>
+                  <RoleGuard allowedRoles={['MANAGER', 'ADMIN']}>
                     <ManagerDashboard />
                   </RoleGuard>
                 </ProtectedWorkspace>
@@ -109,7 +109,7 @@ export default function App() {
               path="/requests/new"
               element={
                 <ProtectedWorkspace>
-                  <RoleGuard allowedRoles={['EMPLOYEE']}>
+                  <RoleGuard allowedRoles={['EMPLOYEE', 'ADMIN']}>
                     <CreateRequest />
                   </RoleGuard>
                 </ProtectedWorkspace>
