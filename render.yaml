@@ -10,7 +10,7 @@ services:
     startCommand: java -jar target/smartprocure-backend-0.0.1-SNAPSHOT.jar
     envVars:
       - key: SPRING_PROFILES_ACTIVE
-        value: tidb
+        value: postgres
       - key: JAVA_VERSION
         value: "17"
 
