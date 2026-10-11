@@ -60,7 +60,7 @@ public class AuthServiceTest {
     public void testRegisterUserSuccess() {
         RegisterRequest request = new RegisterRequest("Alice Smith", "alice@smartprocure.com", "secret123", Role.EMPLOYEE, 1L);
 
-        when(userRepository.existsByEmail("alice@smartprocure.com")).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase("alice@smartprocure.com")).thenReturn(false);
         when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
         when(passwordEncoder.encode("secret123")).thenReturn("encodedPassword");
 
@@ -73,7 +73,7 @@ public class AuthServiceTest {
                 .department(department)
                 .build();
 
-        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+        when(userRepository.saveAndFlush(any(User.class))).thenReturn(savedUser);
 
         Authentication auth = mock(Authentication.class);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(auth);
@@ -90,7 +90,7 @@ public class AuthServiceTest {
     @Test
     public void testRegisterUserDuplicateEmailThrowsException() {
         RegisterRequest request = new RegisterRequest("Alice Smith", "alice@smartprocure.com", "secret123", Role.EMPLOYEE, 1L);
-        when(userRepository.existsByEmail("alice@smartprocure.com")).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase("alice@smartprocure.com")).thenReturn(true);
 
         assertThatThrownBy(() -> authService.registerUser(request))
                 .isInstanceOf(UserAlreadyExistsException.class)
