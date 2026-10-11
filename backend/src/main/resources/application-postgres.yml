@@ -3,7 +3,7 @@ spring:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:smartprocure_db}
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    password: ${DB_PASSWORD:Bhaanu@2007}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
