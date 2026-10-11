@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function Skeleton({ width = '100%', height = '20px', borderRadius = 'var(--radius-sm)', style = {} }) {
   return (
     <div
@@ -8,7 +6,7 @@ export default function Skeleton({ width = '100%', height = '20px', borderRadius
         width,
         height,
         borderRadius,
-        ...style
+        ...style,
       }}
     />
   );
@@ -16,10 +14,10 @@ export default function Skeleton({ width = '100%', height = '20px', borderRadius
 
 export function SkeletonCard() {
   return (
-    <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <Skeleton width="40%" height="16px" />
+    <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', padding: '1.5rem' }}>
+      <Skeleton width="45%" height="16px" />
       <Skeleton width="70%" height="32px" />
-      <Skeleton width="100%" height="12px" />
+      <Skeleton width="100%" height="14px" />
     </div>
   );
 }
