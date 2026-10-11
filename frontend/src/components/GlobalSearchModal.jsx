@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { globalSearch } from '../services/api';
+import PriorityBadge from './PriorityBadge';
+import { Search, X, ArrowUpRight, Inbox } from 'lucide-react';
 
 export default function GlobalSearchModal({ isOpen, onClose }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        onClose(prev => !prev);
+        onClose((prev) => !prev);
       }
       if (e.key === 'Escape' && isOpen) {
         onClose(false);
@@ -28,10 +32,10 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await globalSearch(query);
+        const res = await globalSearch(query.trim());
         setResults(res.data || []);
       } catch (err) {
-        console.error(err);
+        console.error('Search query failed:', err);
       } finally {
         setLoading(false);
       }
@@ -41,61 +45,141 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
+  const handleSelectResult = (requestId) => {
+    navigate(`/requests/${requestId}`);
+    onClose(false);
+    setQuery('');
+  };
+
   return (
-    <div className="modal-overlay" onClick={() => onClose(false)}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={() => onClose(false)} role="dialog" aria-modal="true">
+      <div
+        className="modal-content"
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: '640px', padding: '1.5rem' }}
+      >
+        {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: '700' }}>Omnibox Global Search</h3>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>ESC to close</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            <Search size={18} style={{ color: 'var(--accent-blue)' }} />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>
+              Omnibox Global Search
+            </h3>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <kbd className="keyboard-kbd">ESC</kbd>
+            <button
+              onClick={() => onClose(false)}
+              aria-label="Close search modal"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-muted)',
+                cursor: 'pointer',
+                padding: '0.25rem',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
-        <input
-          type="text"
-          placeholder="Search by PR#, title, category, or employee..."
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          autoFocus
-          style={{
-            width: '100%',
-            padding: '0.75rem 1rem',
-            borderRadius: '8px',
-            border: '1px solid var(--border-color)',
-            background: 'var(--bg-dark)',
-            color: 'var(--text-primary)',
-            fontSize: '1rem',
-            outline: 'none',
-            marginBottom: '1rem'
-          }}
-        />
 
-        {loading && <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Searching...</p>}
+        {/* Search Input */}
+        <div style={{ position: 'relative', marginBottom: '1.25rem' }}>
+          <Search
+            size={16}
+            style={{
+              position: 'absolute',
+              left: '0.9rem',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: 'var(--text-muted)',
+            }}
+          />
+          <input
+            type="text"
+            placeholder="Search by PR#, title, category, department, or employee..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            autoFocus
+            className="form-input"
+            style={{
+              paddingLeft: '2.5rem',
+              paddingRight: '1rem',
+              fontSize: '0.95rem',
+              borderRadius: 'var(--radius-md)',
+            }}
+          />
+        </div>
 
-        <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
+        {loading && (
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', padding: '0.5rem 0' }}>
+            Searching database records...
+          </p>
+        )}
+
+        {/* Results List */}
+        <div style={{ maxHeight: '360px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {results.length > 0 ? (
-            results.map(req => (
+            results.map((req) => (
               <div
                 key={req.id}
+                onClick={() => handleSelectResult(req.id)}
                 style={{
-                  padding: '0.75rem',
-                  borderBottom: '1px solid var(--border-color)',
+                  padding: '0.85rem 1rem',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid var(--border-subtle)',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  transition: 'background var(--transition-fast), border-color var(--transition-fast)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--bg-card-hover)';
+                  e.currentTarget.style.borderColor = 'var(--border-medium)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
+                  e.currentTarget.style.borderColor = 'var(--border-subtle)';
                 }}
               >
                 <div>
-                  <div style={{ fontWeight: '700', color: 'var(--accent-cyan)' }}>{req.requestNumber} - {req.title}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    Category: {req.category} | Employee: {req.employeeName} | Dept: {req.departmentName}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontWeight: '700', color: 'var(--accent-blue)', fontSize: '0.875rem' }}>
+                      {req.requestNumber}
+                    </span>
+                    <span style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '0.875rem' }}>
+                      {req.title}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                    {req.category} • {req.employeeName} • {req.departmentName}
                   </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontWeight: '700' }}>${req.estimatedCost?.toLocaleString()}</div>
-                  <span className={`priority-badge priority-${req.priorityLevel?.toLowerCase()}`}>{req.priorityLevel}</span>
+
+                <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div>
+                    <div style={{ fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                      ${req.estimatedCost?.toLocaleString()}
+                    </div>
+                    <PriorityBadge level={req.priorityLevel} score={req.priorityScore} />
+                  </div>
+                  <ArrowUpRight size={16} style={{ color: 'var(--text-muted)' }} />
                 </div>
               </div>
             ))
           ) : (
-            query.trim() && !loading && <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No matching requests found.</p>
+            query.trim() &&
+            !loading && (
+              <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)' }}>
+                <Inbox size={28} style={{ margin: '0 auto 0.5rem', color: 'var(--text-muted)' }} />
+                <p style={{ fontSize: '0.875rem' }}>No matching purchase requests found.</p>
+              </div>
+            )
           )}
         </div>
       </div>
