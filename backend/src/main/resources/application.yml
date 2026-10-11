@@ -6,7 +6,7 @@ server:
 
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:tidb}
+    active: ${SPRING_PROFILES_ACTIVE:postgres}
   application:
     name: smartprocure-backend
   jpa:
