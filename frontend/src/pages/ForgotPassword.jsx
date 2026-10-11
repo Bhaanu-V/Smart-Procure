@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { forgotPasswordApi } from '../services/api';
 import Navbar from '../components/Navbar';
-import { Mail, ArrowRight, Key, CheckCircle, AlertCircle } from 'lucide-react';
+import { Mail, ArrowRight, Key, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -20,7 +20,7 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      const res = await forgotPasswordApi(email);
+      const res = await forgotPasswordApi(email.trim());
       setSuccessMessage('Password reset instructions generated successfully!');
       if (res.data && res.data.token) {
         setResetToken(res.data.token);
@@ -33,84 +33,154 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
-      <div style={{ maxWidth: '440px', margin: '3.5rem auto', padding: '2.25rem', backgroundColor: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border-medium)', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5)' }}>
-        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-          <div style={{ display: 'inline-flex', padding: '0.75rem', borderRadius: '12px', backgroundColor: 'rgba(56, 189, 248, 0.1)', color: 'var(--accent-blue)', marginBottom: '0.75rem' }}>
-            <Key size={28} />
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2.5rem 1.25rem' }}>
+        <div
+          className="card"
+          style={{
+            maxWidth: '440px',
+            width: '100%',
+            padding: '2.25rem',
+            borderRadius: 'var(--radius-xl)',
+            boxShadow: 'var(--shadow-overlay)',
+            border: '1px solid var(--border-medium)',
+          }}
+        >
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                marginBottom: '0.85rem',
+                boxShadow: '0 0 16px rgba(56, 189, 248, 0.35)',
+              }}
+            >
+              <Key size={22} />
+            </div>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+              Forgot Password
+            </h1>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+              Enter your registered work email to generate an authorization reset token.
+            </p>
           </div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: '800', color: 'var(--text-primary)' }}>Forgot Password</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
-            Enter your registered email address to generate a password reset authorization token.
+
+          {/* Error Notice */}
+          {error && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.75rem 1rem',
+                backgroundColor: 'rgba(244, 63, 94, 0.12)',
+                border: '1px solid rgba(244, 63, 94, 0.3)',
+                color: '#fda4af',
+                borderRadius: 'var(--radius-md)',
+                marginBottom: '1.25rem',
+                fontSize: '0.85rem',
+              }}
+            >
+              <AlertCircle size={16} style={{ flexShrink: 0 }} />
+              <div>{error}</div>
+            </div>
+          )}
+
+          {/* Success Box */}
+          {successMessage && (
+            <div
+              style={{
+                padding: '1rem',
+                backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                borderRadius: 'var(--radius-md)',
+                marginBottom: '1.25rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '700', color: '#34d399', marginBottom: '0.35rem' }}>
+                <CheckCircle2 size={18} />
+                <span>Reset Token Generated</span>
+              </div>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.825rem', lineHeight: '1.5' }}>
+                Instructions sent for <strong>{email}</strong>. Use the authorization token below to reset your password.
+              </p>
+
+              {resetToken && (
+                <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px dashed var(--border-medium)' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                    Reset Authorization Token:
+                  </div>
+                  <div
+                    style={{
+                      padding: '0.5rem 0.75rem',
+                      backgroundColor: 'var(--bg-input)',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-subtle)',
+                      color: 'var(--accent-blue)',
+                      fontWeight: '700',
+                      fontSize: '0.825rem',
+                      wordBreak: 'break-all',
+                      marginBottom: '0.65rem',
+                    }}
+                  >
+                    {resetToken}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/reset-password?token=${resetToken}`)}
+                    className="btn btn-primary"
+                    style={{ width: '100%', padding: '0.65rem', fontSize: '0.85rem', gap: '0.35rem' }}
+                  >
+                    <span>Auto-Fill Reset Form</span>
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <Mail size={14} style={{ color: 'var(--accent-blue)' }} /> Registered Work Email *
+              </label>
+              <input
+                type="email"
+                className="form-input"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@smartprocure.com"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-primary"
+              style={{ padding: '0.85rem', fontSize: '0.95rem', gap: '0.45rem', marginTop: '0.35rem' }}
+            >
+              <span>{loading ? 'Generating Token...' : 'Send Reset Instructions'}</span>
+              <ArrowRight size={16} />
+            </button>
+          </form>
+
+          <p style={{ marginTop: '1.75rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            Remembered your password?{' '}
+            <Link to="/login" style={{ color: 'var(--accent-blue)', fontWeight: '700', textDecoration: 'none' }}>
+              Back to Sign In
+            </Link>
           </p>
         </div>
-
-        {error && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.85rem 1rem', backgroundColor: 'rgba(244, 63, 94, 0.15)', border: '1px solid var(--accent-rose)', color: 'var(--accent-rose)', borderRadius: '8px', marginBottom: '1.25rem', fontSize: '0.875rem' }}>
-            <AlertCircle size={18} />
-            <div>{error}</div>
-          </div>
-        )}
-
-        {successMessage && (
-          <div style={{ padding: '1rem', backgroundColor: 'rgba(16, 185, 129, 0.15)', border: '1px solid var(--accent-emerald)', color: '#34d399', borderRadius: '8px', marginBottom: '1.25rem', fontSize: '0.875rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-              <CheckCircle size={18} />
-              Password Reset Link Sent!
-            </div>
-            <p style={{ color: 'var(--text-primary)', fontSize: '0.85rem', lineHeight: '1.5', margin: 0 }}>
-              We have dispatched a password reset link to <strong>{email}</strong>. Please check your inbox (and spam folder) to reset your password.
-            </p>
-            {resetToken && (
-              <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px dashed rgba(255,255,255,0.1)' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: '700', marginBottom: '0.35rem' }}>
-                  YOUR RESET AUTHORIZATION TOKEN:
-                </div>
-                <div style={{ padding: '0.5rem 0.75rem', backgroundColor: '#0f172a', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--accent-blue)', fontWeight: '700', fontSize: '0.85rem', wordBreak: 'break-all', marginBottom: '0.5rem' }}>
-                  {resetToken}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => navigate(`/reset-password?token=${resetToken}`)}
-                  className="btn btn-primary"
-                  style={{ width: '100%', padding: '0.65rem', fontSize: '0.85rem' }}
-                >
-                  Click Here to Auto-Fill Reset Form <ArrowRight size={14} />
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.875rem', marginBottom: '0.4rem', color: 'var(--text-secondary)', fontWeight: '600' }}>
-              <Mail size={16} style={{ color: 'var(--accent-blue)' }} /> Registered Work Email *
-            </label>
-            <input
-              type="email"
-              className="form-input"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. employee@smartprocure.com"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary"
-            style={{ padding: '0.85rem', fontSize: '1rem', marginTop: '0.25rem' }}
-          >
-            {loading ? 'Generating Reset Token...' : <>Send Reset Instructions <ArrowRight size={18} /></>}
-          </button>
-        </form>
-
-        <p style={{ marginTop: '1.75rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-          Remembered your password? <Link to="/login" style={{ color: 'var(--accent-blue)', fontWeight: '600' }}>Back to Sign In</Link>
-        </p>
       </div>
     </div>
   );
