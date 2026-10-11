@@ -30,8 +30,9 @@ api.interceptors.response.use(
       }
       const data = error.response.data;
       let userMessage = data?.message || data?.error || `Request failed with status ${status}`;
-      if (data?.fieldErrors && typeof data.fieldErrors === 'object') {
-        const details = Object.entries(data.fieldErrors)
+      const fieldErrors = data?.errors || data?.fieldErrors;
+      if (fieldErrors && typeof fieldErrors === 'object') {
+        const details = Object.entries(fieldErrors)
           .map(([field, msg]) => `${field}: ${msg}`)
           .join(', ');
         userMessage += ` (${details})`;
