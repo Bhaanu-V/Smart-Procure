@@ -1,21 +1,28 @@
 services:
   # -------------------------------------------------------------
-  # Backend Web Service (Spring Boot 3 + TiDB Cloud)
+  # Backend Web Service (Spring Boot 3 + PostgreSQL / H2 Failover)
   # -------------------------------------------------------------
   - type: web
     name: smartprocure-backend
     runtime: java
     rootDir: backend
     buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/smartprocure-backend-0.0.1-SNAPSHOT.jar
+    startCommand: java -Xmx384m -Xms128m -jar target/smartprocure-backend-0.0.1-SNAPSHOT.jar
+    healthCheckPath: /api/health
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: postgres
       - key: JAVA_VERSION
         value: "17"
+      - key: JWT_SECRET
+        value: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartprocure-db
+          property: connectionString
 
   # -------------------------------------------------------------
-  # Frontend Static Site (React + Vite SPA)
+  # Frontend Static Site (React 18 + Vite SPA)
   # -------------------------------------------------------------
   - type: web
     name: smartprocure-frontend
@@ -31,4 +38,11 @@ services:
         source: /*
         destination: /index.html
 
-
+# -------------------------------------------------------------
+# Managed PostgreSQL Database on Render (Free Tier)
+# -------------------------------------------------------------
+databases:
+  - name: smartprocure-db
+    databaseName: smartprocure_db
+    user: smartprocure_user
+    plan: free
